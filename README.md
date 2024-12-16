@@ -1,6 +1,10 @@
-#  learn-file-storage-s3-golang-starter (Tubely)
+# learn-file-storage-s3-golang-starter (Tubely)
 
 This repo contains the starter code for the Tubely application - the #1 tool for engagement bait - for the "Learn File Storage" [course](https://boot.dev/courses/learn-file-storage-golang) on [boot.dev](https://boot.dev)
+
+## Quickstart
+
+*This is to be used as a *reference\* in case you need it, you should follow the instructions in the course rather than trying to do everything here.
 
 ## 1. Install dependencies
 
@@ -32,7 +36,15 @@ brew install sqlite3
 
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-## 2. Configure environment variables
+## 2. Download sample images and videos
+
+```bash
+./assetdownload.sh
+# samples/ dir will be created
+# with sample images and videos
+```
+
+## 3. Configure environment variables
 
 Copy the `.env.example` file to `.env` and fill in the values.
 
@@ -40,7 +52,7 @@ Copy the `.env.example` file to `.env` and fill in the values.
 cp .env.example .env
 ```
 
-Change any values in the `.env` file to match your configuration.
+You'll need to update values in the `.env` file to match your configuration, but _you won't need to do anything here until the course tells you to_.
 
 ## 3. Run the server
 

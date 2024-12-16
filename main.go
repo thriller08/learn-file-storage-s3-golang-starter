@@ -13,14 +13,15 @@ import (
 )
 
 type apiConfig struct {
-	db           database.Client
-	jwtSecret    string
-	platform     string
-	filepathRoot string
-	assetsRoot   string
-	s3Bucket     string
-	s3Region     string
-	port         string
+	db               database.Client
+	jwtSecret        string
+	platform         string
+	filepathRoot     string
+	assetsRoot       string
+	s3Bucket         string
+	s3Region         string
+	s3CfDistribution string
+	port             string
 }
 
 type thumbnail struct {
@@ -73,20 +74,26 @@ func main() {
 		log.Fatal("S3_REGION environment variable is not set")
 	}
 
+	s3CfDistribution := os.Getenv("S3_CF_DISTRO")
+	if s3CfDistribution == "" {
+		log.Fatal("S3_CF_DISTRO environment variable is not set")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("PORT environment variable is not set")
 	}
 
 	cfg := apiConfig{
-		db:           db,
-		jwtSecret:    jwtSecret,
-		platform:     platform,
-		filepathRoot: filepathRoot,
-		assetsRoot:   assetsRoot,
-		s3Bucket:     s3Bucket,
-		s3Region:     s3Region,
-		port:         port,
+		db:               db,
+		jwtSecret:        jwtSecret,
+		platform:         platform,
+		filepathRoot:     filepathRoot,
+		assetsRoot:       assetsRoot,
+		s3Bucket:         s3Bucket,
+		s3Region:         s3Region,
+		s3CfDistribution: s3CfDistribution,
+		port:             port,
 	}
 
 	err = cfg.ensureAssetsDir()
@@ -112,7 +119,7 @@ func main() {
 	mux.HandleFunc("POST /api/video_upload/{videoID}", cfg.handlerUploadVideo)
 	mux.HandleFunc("GET /api/videos", cfg.handlerVideosRetrieve)
 	mux.HandleFunc("GET /api/videos/{videoID}", cfg.handlerVideoGet)
-	mux.HandleFunc("GET /api/thumbnail/{videoID}", cfg.handlerThumbnailGet)
+	mux.HandleFunc("GET /api/thumbnails/{videoID}", cfg.handlerThumbnailGet)
 	mux.HandleFunc("DELETE /api/videos/{videoID}", cfg.handlerVideoMetaDelete)
 
 	mux.HandleFunc("POST /admin/reset", cfg.handlerReset)
