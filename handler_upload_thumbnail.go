@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"mime"
@@ -8,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/auth"
 	"github.com/google/uuid"
+	"github.com/thriller08/learn-file-storage-s3-golang-starter/internal/auth"
 )
 
 func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +48,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, http.StatusUnauthorized, "Invalid thumbnail data", err)
 		return
 	}
+	defer file.Close()
 
 	mimeType, _, err := mime.ParseMediaType(header.Header.Get("Content-Type"))
 	if err != nil {
@@ -63,7 +66,15 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	filePath := filepath.Join(cfg.assetsRoot, fmt.Sprintf("%s.%s", videoID, fileExt))
+	buf := make([]byte, 32)
+	_, err = rand.Read(buf)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't create filename", err)
+		return
+	}
+
+	randString := base64.RawURLEncoding.EncodeToString(buf)
+	filePath := filepath.Join(cfg.assetsRoot, fmt.Sprintf("%s.%s", randString, fileExt))
 	f, err := os.Create(filePath)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "Couldn't create file", err)
@@ -83,7 +94,7 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fileUrl := fmt.Sprintf("http://localhost:%s/assets/%s.%s", cfg.port, videoID, fileExt)
+	fileUrl := fmt.Sprintf("http://localhost:%s/assets/%s.%s", cfg.port, randString, fileExt)
 	dbVideo.ThumbnailURL = &fileUrl
 
 	err = cfg.db.UpdateVideo(dbVideo)
