@@ -8,7 +8,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/google/uuid"
 	"github.com/thriller08/learn-file-storage-s3-golang-starter/internal/database"
 
 	"github.com/joho/godotenv"
@@ -28,12 +27,14 @@ type apiConfig struct {
 	port             string
 }
 
+/*
 type thumbnail struct {
 	data      []byte
 	mediaType string
 }
 
 var videoThumbnails = map[uuid.UUID]thumbnail{}
+*/
 
 func main() {
 	godotenv.Load(".env")
